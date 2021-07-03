@@ -1,13 +1,11 @@
 import { NextPage } from 'next';
 import { signIn, signOut, useSession } from 'next-auth/client';
 
-const Home: NextPage = () => {
+const AppPage: NextPage = () => {
   const [session, loading] = useSession();
 
   return (
-    <div>
-      <h1>Página principal</h1>
-
+    <div className="flex flex-col items-center justify-center min-h-screen py-2">
       {!session && (
         <>
           Not signed in <br />
@@ -29,4 +27,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default AppPage;
