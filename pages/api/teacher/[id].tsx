@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ObjectID } from 'mongodb';
 
-import connect from '../../utils/database';
+import connect from '../../../utils/database';
 
 type ErrorResponseType = {
   error: string;
@@ -26,12 +26,12 @@ export default async (
   response: NextApiResponse<ErrorResponseType | SucessResponseType>
 ): Promise<void> => {
   if (request.method === 'GET') {
-    const { id } = request.body;
+    const { id } = request.query;
 
     if (!id) {
       return response
         .status(400)
-        .json({ error: 'missing teacher id on request body' });
+        .json({ error: 'missing teacher id on request params' });
     }
 
     const { db } = await connect();

@@ -1,15 +1,31 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getSession } from 'next-auth/client';
+// import { getSession } from 'next-auth/client';
 import { ObjectID } from 'mongodb';
 
 import connect from '../../utils/database';
+
+type User = {
+  _id: string;
+  name: string;
+  email: string;
+  cellPhone: string;
+  teacher: boolean;
+  coins: number;
+  courses: Array<string>;
+  available_hours: Record<string, number>;
+  available_locations: Array<string>;
+  reviews: Record<string, number>[];
+  appointments: {
+    date: string;
+  }[];
+};
 
 type ErrorResponseType = {
   error: string;
 };
 
-type SucessResponseType = {
-  data: string;
+type AppointmentType = {
+  date: string;
   teacher_name: string;
   teacher_id: string;
   student_name: string;
@@ -21,17 +37,17 @@ type SucessResponseType = {
 
 export default async (
   request: NextApiRequest,
-  response: NextApiResponse<ErrorResponseType | SucessResponseType>
+  response: NextApiResponse<ErrorResponseType | AppointmentType>
 ): Promise<void> => {
-  const session = await getSession({ req: request });
+  // const session = await getSession({ req: request });
 
-  if (!session) {
-    return response.status(401).json({ error: 'Please login first' });
-  }
+  // if (!session) {
+  //   return response.status(401).json({ error: 'Please login first' });
+  // }
 
   if (request.method === 'POST') {
     const {
-      data,
+      date,
       teacher_name,
       teacher_id,
       student_name,
@@ -39,10 +55,10 @@ export default async (
       course,
       location,
       appointment_link,
-    } = request.body;
+    }: AppointmentType = request.body;
 
     if (
-      !data ||
+      !date ||
       !teacher_name ||
       !teacher_id ||
       !student_name ||
@@ -76,7 +92,7 @@ export default async (
       });
 
     const appointments = {
-      data,
+      date,
       teacher_name,
       teacher_id,
       student_name,
@@ -90,14 +106,14 @@ export default async (
       .collection('users')
       .updateOne(
         { _id: new ObjectID(teacher_id) },
-        { $push: { appointments: appointments } }
+        { $push: { appointments: appointments }, $inc: { coins: 1 } }
       );
 
     await db
       .collection('users')
       .updateOne(
         { _id: new ObjectID(student_id) },
-        { $push: { appointments: appointments } }
+        { $push: { appointments: appointments }, $inc: { coins: 1 } }
       );
 
     return response.status(200).json(appointments);
