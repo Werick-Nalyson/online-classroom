@@ -26,7 +26,7 @@ export default async (
   response: NextApiResponse<ErrorResponseType | SucessResponseType>
 ): Promise<void> => {
   if (request.method === 'GET') {
-    const { id } = request.query;
+    const id = request.query.id as string;
 
     if (!id) {
       return response
