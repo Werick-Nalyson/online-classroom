@@ -6,8 +6,6 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <h1>Página principal</h1>
-
       {!session && (
         <>
           Not signed in <br />

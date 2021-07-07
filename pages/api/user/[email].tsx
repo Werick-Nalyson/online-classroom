@@ -40,7 +40,7 @@ export default async (
       return response.status(200).json({ error: 'user not found' });
     }
 
-    return response.status(200).json(user);
+    return response.status(400).json(user);
   } else {
     return response.status(400).json({ error: 'wrong request method' });
   }
