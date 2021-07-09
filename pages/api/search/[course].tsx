@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import connect from '../../utils/database';
+import connect from '../../../utils/database';
 
 type ErrorResponseType = {
   error: string;
@@ -29,19 +29,19 @@ export default async (
   response: NextApiResponse<ErrorResponseType | SucessResponseType>
 ): Promise<void> => {
   if (request.method === 'GET') {
-    const { courses } = request.body;
+    const { course } = request.query;
 
-    if (!courses) {
+    if (!course) {
       return response
         .status(400)
-        .json({ error: 'missing course name on request body' });
+        .json({ error: 'missing course name on params' });
     }
 
     const { db } = await connect();
 
     const teachers = await db
       .collection('users')
-      .find({ courses: { $in: [new RegExp(`^${courses}`, 'i')] } })
+      .find({ courses: { $in: [new RegExp(`^${course}`, 'i')] } })
       .toArray();
 
     if (teachers.length === 0) {
