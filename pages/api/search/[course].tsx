@@ -20,13 +20,9 @@ type Teacher = {
   appointments: [];
 };
 
-type SucessResponseType = {
-  teachers: Array<Teacher>;
-};
-
 export default async (
   request: NextApiRequest,
-  response: NextApiResponse<ErrorResponseType | SucessResponseType>
+  response: NextApiResponse<ErrorResponseType | Teacher[]>
 ): Promise<void> => {
   if (request.method === 'GET') {
     const { course } = request.query;
@@ -39,7 +35,7 @@ export default async (
 
     const { db } = await connect();
 
-    const teachers = await db
+    const teachers: Teacher[] = await db
       .collection('users')
       .find({ courses: { $in: [new RegExp(`^${course}`, 'i')] } })
       .toArray();
@@ -48,7 +44,7 @@ export default async (
       return response.status(400).json({ error: 'Course not found' });
     }
 
-    return response.status(200).json({ teachers });
+    return response.status(200).json(teachers);
   } else {
     return response.status(400).json({ error: 'wrong request method' });
   }
